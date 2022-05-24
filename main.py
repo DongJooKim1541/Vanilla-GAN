@@ -194,26 +194,15 @@ for epoch in range(num_epochs):
         xb = xb.to(device)
         yb = yb.to(device)
 
+        noise = torch.randn(ba_si, 100).to(device)  # 노이즈 생성, mean 0, variance 1 from a normal distribution, out~N(0,1)
+        # print("noise.size()",noise.size()) #torch.Size([batch_size, 100])
+
         yb_real = torch.Tensor(ba_si, 1).fill_(1.0).to(device)  # real_label
         yb_fake = torch.Tensor(ba_si, 1).fill_(0.0).to(device)  # fake_label
         # print("yb_real.size(): ", yb_real.size()) # torch.Size([64, 1]), fill with tensor([[1.],...,[1.]], device='cuda:0')
         # print("yb_fake.size(): ", yb_fake.size()) # torch.Size([64, 1]), fill with tensor([[0.],...,[0.]], device='cuda:0')
 
-        # Genetator
-        model_gen.zero_grad()
-        noise = torch.randn(ba_si, 100).to(device)  # 노이즈 생성, mean 0, variance 1 from a normal distribution, out~N(0,1)
-        # print("noise.size()",noise.size()) #torch.Size([batch_size, 100])
-        gen_label = torch.randint(0, 10, (ba_si,)).to(device)  # label 생성
-        # print("gen_label.size()", gen_label.size()) #torch.Size([batch_size])
-        # 가짜 이미지 생성
-        out_gen = model_gen(noise)
 
-        # 가짜 이미지 판별
-        out_dis = model_dis(out_gen)
-
-        loss_gen = loss_func(out_dis, yb_real)
-        loss_gen.backward()
-        opt_gen.step()
 
         # Discriminator
         model_dis.zero_grad()
@@ -222,6 +211,9 @@ for epoch in range(num_epochs):
         out_dis = model_dis(xb)
         loss_real = loss_func(out_dis, yb_real)
 
+        # 가짜 이미지 생성
+        out_gen = model_gen(noise)
+
         # 가짜 이미지 판별
         out_dis = model_dis(out_gen.detach())
         loss_fake = loss_func(out_dis, yb_fake)
@@ -229,6 +221,16 @@ for epoch in range(num_epochs):
         loss_dis = (loss_real + loss_fake) / 2
         loss_dis.backward()
         opt_dis.step()
+
+        # Genetator
+        model_gen.zero_grad()
+
+        # 가짜 이미지 판별
+        out_dis = model_dis(out_gen)
+
+        loss_gen = loss_func(out_dis, yb_real)
+        loss_gen.backward()
+        opt_gen.step()
 
         loss_history['gen'].append(loss_gen.item())
         loss_history['dis'].append(loss_dis.item())
