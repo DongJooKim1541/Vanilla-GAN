@@ -17,11 +17,11 @@ Pytorch
 
 ## Result
 
-<img src = "./loss.png" width="30%"> 
+<img src = "./loss.png" width="60%"> 
 Generator and Discriminator loss
 
 <br/>
 <br/>
 
-<img src = "./Generated image.png" width="90%"> 
+<img src = "./Generated image.png" width="50%"> 
 Generated image
