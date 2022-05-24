@@ -95,7 +95,7 @@ model_gen = Generator(params).to(device)
 x = torch.randn(16, 100, device=device)  # 노이즈
 label = torch.randint(0, 10, (16,), device=device)  # 레이블
 model_gen = Generator(params).to(device)
-out_gen = model_gen(x, label)  # 가짜 이미지 생성
+out_gen = model_gen(x)  # 가짜 이미지 생성
 print("out_gen.shape: ",out_gen.shape) # torch.Size([16, 1, 28, 28])
 """
 
@@ -138,7 +138,7 @@ model_dis = Discriminator(params).to(device)
 x = torch.randn(16, 1, 28, 28, device=device)
 label = torch.randint(0, 10, (16,), device=device)
 model_dis = Discriminator(params).to(device)
-out_dis = model_dis(x, label)
+out_dis = model_dis(x)
 print("out_dis.shape: ",out_dis.shape) # torch.Size([16, 1])
 """
 
